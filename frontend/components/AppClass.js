@@ -1,6 +1,6 @@
 import React from 'react'
 import axios from 'axios'
-import e from 'cors'
+
 
 // Suggested initial states
 const initialMessage = ''
@@ -99,12 +99,27 @@ export default class AppClass extends React.Component {
     console.log(this.state)
   }
 
-  onSubmit = () => {
-    debugger
+  resetEmail = (e) => {
+    this.setState({
+      ...this.state, 
+      email: initialEmail
+    })
+  }
+
+  onSubmit = (evt) => {
+    evt.preventDefault()
+    if (this.state.email == false) {
+      this.setState({...this.state, message: "Ouch: email is required"}) }
+
     axios.post('http://localhost:9000/api/result', { "x": this.state.x , "y": this.state.y, "steps": this.state.steps, "email": this.state.email })
-    .then(res=> {
-      console.log(res)
-     }).catch(err => console.log(err))
+    .then((res)=> {
+        this.setState({
+        ...this.state, 
+        message: res.data.message})
+     }).catch((res) => {
+      this.setState({...this.state, message: res.response.data.message })
+     })
+     this.resetEmail()
   }
 
   render() {
@@ -113,7 +128,8 @@ export default class AppClass extends React.Component {
       <div id="wrapper" className={className}>
         <div className="info">
           <h3 id="coordinates">Coordinates ({this.state.x}, {this.state.y})</h3>
-          <h3 id="steps">You moved {this.state.steps} times</h3>
+          <h3 id="steps">
+            {this.state.steps == 1 ? `You moved ${this.state.steps} time` : `You moved ${this.state.steps} times`}</h3>
         </div>
         <div id="grid">
           {
@@ -128,14 +144,14 @@ export default class AppClass extends React.Component {
           <h3 id="message">{this.state.message}</h3>
         </div>
         <div id="keypad">
-          <button id="left" onClick={() => {this.moveLeft()}}>LEFT</button>
-          <button id="up" onClick={() => {this.moveUp()}}>UP</button>
-          <button id="right" onClick={() => {this.moveRight()}}>RIGHT</button>
-          <button id="down" onClick={() => {this.moveDown()}}>DOWN</button>
-          <button id="reset" onClick={()=>{this.reset()}}>reset</button>
+          <button id="left" onClick={this.moveLeft}>LEFT</button>
+          <button id="up" onClick={this.moveUp}>UP</button>
+          <button id="right" onClick={this.moveRight}>RIGHT</button>
+          <button id="down" onClick={this.moveDown}>DOWN</button>
+          <button id="reset" onClick={this.reset}>reset</button>
         </div>
-        <form onSubmit={()=>{this.onSubmit()}}>
-          <input id="email" type="email" placeholder="type email" onChange={this.onChange}></input>
+        <form onSubmit={this.onSubmit}>
+          <input id="email" type="email" placeholder="type email" onChange={this.onChange} value={this.state.email}></input>
           <input id="submit" type="submit"></input>
         </form>
       </div>

@@ -24,7 +24,7 @@ export default function AppFunctional(props) {
   
   useEffect(() => {
     console.log('rendered')
-      }, [])
+      }, [message])
 
   
   function moveLeft() {
@@ -88,23 +88,31 @@ export default function AppFunctional(props) {
 
   function onChange(evt) {
     setEmail(evt.target.value)
-    console.log(email)
   }
 
-  function onSubmit() {
-    debugger
-    axios.post(`http://localhost:9000/api/result`, { "x": x , "y": y, "steps": steps, "email": email })
-    .then((res)=> {
-      setResponse(res)
-      console.log(response)
-     }).catch((err) => console.log(err))
+  function resetEmail() {
+    setEmail(initialEmail)
   }
+
+  const onSubmit = (evt) => {
+    evt.preventDefault()
+    if (email == false) {
+      setMessage("Ouch: email is required") }
+    axios.post('http://localhost:9000/api/result', { "x": x , "y": y, "steps": steps, "email": email })
+    .then((res)=> {
+        setMessage(res.data.message)
+     }).catch((res) => {
+      setMessage(res.response.data.message)
+     })
+     resetEmail()
+  }
+  
 
   return (
     <div id="wrapper" className={props.className}>
       <div className="info">
         <h3 id="coordinates">Coordinates ({x}, {y})</h3>
-        <h3 id="steps">You moved {steps} times</h3>
+        <h3 id="steps">{steps == 1 ? `You moved ${steps} time` : `You moved ${steps} times`}</h3>
       </div>
       <div id="grid">
         {
@@ -125,8 +133,8 @@ export default function AppFunctional(props) {
         <button id="down" onClick={() => {moveDown()}}>DOWN</button>
         <button id="reset" onClick={()=>{reset()}}>reset</button>
       </div>
-      <form onSubmit={()=> {onSubmit()}}>
-        <input id="email" type="email" placeholder="type email" onChange={onChange}></input>
+      <form onSubmit={onSubmit}>
+        <input id="email" type="email" placeholder="type email" onChange={onChange} value={email}></input>
         <input id="submit" type="submit"></input>
       </form>
     </div>
