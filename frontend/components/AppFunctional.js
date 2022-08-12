@@ -1,78 +1,135 @@
 import React from 'react'
+import {useState, useEffect} from 'react'
+import axios from 'axios'
 
 // Suggested initial states
 const initialMessage = ''
 const initialEmail = ''
 const initialSteps = 0
 const initialIndex = 4 // the index the "B" is at
+const initialX = 2
+const initialY = 2
+
 
 export default function AppFunctional(props) {
-  // THE FOLLOWING HELPERS ARE JUST RECOMMENDATIONS.
-  // You can delete them and build your own logic from scratch.
 
-  function getXY() {
-    // It it not necessary to have a state to track the coordinates.
-    // It's enough to know what index the "B" is at, to be able to calculate them.
+  const [message, setMessage] = useState(initialMessage)
+  const [email, setEmail] = useState(initialEmail)
+  const [steps, setSteps] = useState(initialSteps)
+  const [index, setIndex] = useState(initialIndex)
+  const [x, setX] = useState(initialX)
+  const [y, setY] = useState(initialY)
+  const [response, setResponse] = useState({})
+
+  
+  useEffect(() => {
+    console.log('rendered')
+      }, [])
+
+  
+  function moveLeft() {
+    if (index == 1 || index == 2 || index == 4 || index == 5 
+      ||index == 7 || index == 8) {
+      setIndex(index - 1)
+      setSteps(steps +1)
+      setX(x -1)
+      console.log(`moved left`)
+  } else {
+    setMessage("You can't go left")
+       }
+  } 
+
+  function moveRight() {
+    if  (index == 0 || index == 1 || index == 3 ||
+      index == 4 || index == 6 || index == 7) {
+        setIndex(index +1)
+        setSteps(steps+1)
+        setX(x+1)
+   console.log(`moved right`)
+  }else {  
+    setMessage(`You can't go right`)
+}
   }
 
-  function getXYMessage() {
-    // It it not necessary to have a state to track the "Coordinates (2, 2)" message for the user.
-    // You can use the `getXY` helper above to obtain the coordinates, and then `getXYMessage`
-    // returns the fully constructed string.
+  function moveUp() {
+    if  (index == 3 || index == 4 || index == 5 ||
+      index == 6 || index == 7 || index == 8) {
+        setIndex(index-3)
+        setSteps(steps+1)
+        setY(y-1)
+        console.log('moved up')
+  } else {
+    setMessage(`You can't go up`)
   }
+}
+
+  function moveDown(){
+    if (index == 0 || index == 1 || index == 2 ||
+      index == 3 || index == 4 || index == 5) {
+        setIndex(index+3)
+        setSteps(steps+1)
+        setY(y+1)
+        console.log('moved down')
+  } else {
+    setMessage(`You can't go down`)
+  }
+}
 
   function reset() {
-    // Use this helper to reset all states to their initial values.
+   setMessage(initialMessage)
+   setEmail(initialEmail)
+   setSteps(initialSteps)
+   setIndex(initialIndex)
+   setX(initialX)
+   setY(initialY)
+   console.log('reset initialized')
   }
 
-  function getNextIndex(direction) {
-    // This helper takes a direction ("left", "up", etc) and calculates what the next index
-    // of the "B" would be. If the move is impossible because we are at the edge of the grid,
-    // this helper should return the current index unchanged.
-  }
-
-  function move(evt) {
-    // This event handler can use the helper above to obtain a new index for the "B",
-    // and change any states accordingly.
-  }
 
   function onChange(evt) {
-    // You will need this to update the value of the input.
+    setEmail(evt.target.value)
+    console.log(email)
   }
 
-  function onSubmit(evt) {
-    // Use a POST request to send a payload to the server.
+  function onSubmit() {
+    debugger
+    axios.post(`http://localhost:9000/api/result`, { "x": x , "y": y, "steps": steps, "email": email })
+    .then((res)=> {
+      setResponse(res)
+      console.log(response)
+     }).catch((err) => console.log(err))
   }
 
   return (
     <div id="wrapper" className={props.className}>
       <div className="info">
-        <h3 id="coordinates">Coordinates (2, 2)</h3>
-        <h3 id="steps">You moved 0 times</h3>
+        <h3 id="coordinates">Coordinates ({x}, {y})</h3>
+        <h3 id="steps">You moved {steps} times</h3>
       </div>
       <div id="grid">
         {
           [0, 1, 2, 3, 4, 5, 6, 7, 8].map(idx => (
-            <div key={idx} className={`square${idx === 4 ? ' active' : ''}`}>
-              {idx === 4 ? 'B' : null}
+            <div key={idx} className={`square${idx === index ? ' active' : ''}`}>
+              {idx === index ? 'B' : null}
             </div>
           ))
         }
       </div>
       <div className="info">
-        <h3 id="message"></h3>
+        <h3 id="message">{message}</h3>
       </div>
       <div id="keypad">
-        <button id="left">LEFT</button>
-        <button id="up">UP</button>
-        <button id="right">RIGHT</button>
-        <button id="down">DOWN</button>
-        <button id="reset">reset</button>
+        <button id="left" onClick={() => {moveLeft()}}>LEFT</button>
+        <button id="up" onClick={() => {moveUp()}}>UP</button>
+        <button id="right"onClick={() => {moveRight()}}>RIGHT</button>
+        <button id="down" onClick={() => {moveDown()}}>DOWN</button>
+        <button id="reset" onClick={()=>{reset()}}>reset</button>
       </div>
-      <form>
-        <input id="email" type="email" placeholder="type email"></input>
+      <form onSubmit={()=> {onSubmit()}}>
+        <input id="email" type="email" placeholder="type email" onChange={onChange}></input>
         <input id="submit" type="submit"></input>
       </form>
     </div>
   )
+
 }
