@@ -17,6 +17,7 @@ beforeEach(()=> {
   const email = screen.queryByTestId('email')
   const submit = screen.queryByTestId('submit')
   const steps = screen.queryByTestId('steps')
+  const message = screen.queryByTestId('message')
 })
 
 test('Renders the Functional App without an issue', () => {
@@ -45,12 +46,12 @@ test('reset button works', async () => {
   await expect(coordinates).toHaveTextContent('Coordinates (2, 2)')
 })
 
-test('Typing an email changes the value of the field', () => {
+test('Typing an email changes the value of the field, foo@bar.baz results in "foo@bar.baz failure', () => {
 
   render(<AppFunctional />)
   fireEvent.change(email, {target: {value: 'foo@bar.ba'}} )
   expect(email).toHaveValue('foo@bar.ba')
-
+  expect()
 })
 
 test('Test that you cannot move down more than once from the center', () => {
@@ -59,5 +60,5 @@ test('Test that you cannot move down more than once from the center', () => {
   fireEvent.click(down)
   fireEvent.click(down)
 
-  expect(screen.queryByText(`You can't go down`)).toBeInTheDocument()
+  expect(message).toHaveTextContent(`You can't go down`)
 })
