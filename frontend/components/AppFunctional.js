@@ -111,8 +111,8 @@ export default function AppFunctional(props) {
   return (
     <div id="wrapper" className={props.className}>
       <div className="info">
-        <h3 id="coordinates">Coordinates ({x}, {y})</h3>
-        <h3 id="steps">{steps == 1 ? `You moved ${steps} time` : `You moved ${steps} times`}</h3>
+        <h3 data-testid="coordinates" id="coordinates">Coordinates ({x}, {y})</h3>
+        <h3 data-testid="steps" id="steps">{steps == 1 ? `You moved ${steps} time` : `You moved ${steps} times`}</h3>
       </div>
       <div id="grid">
         {
@@ -124,18 +124,18 @@ export default function AppFunctional(props) {
         }
       </div>
       <div className="info">
-        <h3 id="message">{message}</h3>
+        <h3 data-testid="message" id="message">{message}</h3>
       </div>
       <div id="keypad">
-        <button id="left" onClick={() => {moveLeft()}}>LEFT</button>
-        <button id="up" onClick={() => {moveUp()}}>UP</button>
-        <button id="right"onClick={() => {moveRight()}}>RIGHT</button>
-        <button id="down" onClick={() => {moveDown()}}>DOWN</button>
-        <button id="reset" onClick={()=>{reset()}}>reset</button>
+        <button data-testid="left" id="left" onClick={() => {moveLeft()}}>LEFT</button>
+        <button data-testid="up" id="up" onClick={() => {moveUp()}}>UP</button>
+        <button data-testid="right" id="right"onClick={() => {moveRight()}}>RIGHT</button>
+        <button data-testid="down" id="down" onClick={() => {moveDown()}}>DOWN</button>
+        <button data-testid="reset" id="reset" onClick={()=>{reset()}}>reset</button>
       </div>
       <form onSubmit={onSubmit}>
-        <input id="email" type="email" placeholder="type email" onChange={onChange} value={email}></input>
-        <input id="submit" type="submit"></input>
+        <input data-testid="email" id="email" type="email" placeholder="type email" onChange={onChange} value={email}></input>
+        <input data-testid="submit" id="submit" type="submit"></input>
       </form>
     </div>
   )
